@@ -1,0 +1,10 @@
+# Compiled binaries / test artifacts
+*.test
+
+# Local auth material — never commit
+*.pfx
+*.pem
+*.jwt
+
+.DS_Store
+.env
