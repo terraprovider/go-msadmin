@@ -66,17 +66,25 @@ func DecodeBody(resp *http.Response) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	switch strings.ToLower(strings.TrimSpace(resp.Header.Get("Content-Encoding"))) {
+	return decode(resp.Header.Get("Content-Encoding"), raw), nil
+}
+
+// decode decompresses raw per Content-Encoding (br | gzip | deflate). It is
+// defensive — some error responses advertise gzip yet aren't — so on any decode
+// failure it returns the raw bytes unchanged. Shared by DecodeBody and the debug
+// transport's response-body logging.
+func decode(encoding string, raw []byte) []byte {
+	switch strings.ToLower(strings.TrimSpace(encoding)) {
 	case "br":
 		if out, e := io.ReadAll(brotli.NewReader(bytes.NewReader(raw))); e == nil && len(out) > 0 {
-			return out, nil
+			return out
 		}
 	case "gzip":
 		if len(raw) >= 2 && raw[0] == 0x1f && raw[1] == 0x8b {
 			if zr, e := gzip.NewReader(bytes.NewReader(raw)); e == nil {
 				defer zr.Close()
 				if out, e := io.ReadAll(zr); e == nil {
-					return out, nil
+					return out
 				}
 			}
 		}
@@ -84,8 +92,8 @@ func DecodeBody(resp *http.Response) ([]byte, error) {
 		fr := flate.NewReader(bytes.NewReader(raw))
 		defer fr.Close()
 		if out, e := io.ReadAll(fr); e == nil {
-			return out, nil
+			return out
 		}
 	}
-	return raw, nil
+	return raw
 }
