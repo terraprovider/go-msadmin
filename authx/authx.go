@@ -124,8 +124,9 @@ func (c Config) AuthorityHost() string {
 // Method reports the selected auth method, honouring explicit Use* flags then
 // falling back to whichever credential material is present.
 //
-// OIDC is chosen when it is requested (use_oidc or any OIDC setting) and a
-// token source is actually available. When it is requested but no source is
+// OIDC is chosen when it is requested (use_oidc, oidc_token,
+// oidc_token_file_path or oidc_request_url) and a token source is actually
+// available (see hasOIDCSource). When it is requested but no source is
 // available (e.g. ARM_USE_OIDC=true on a workstation with no pipeline token),
 // a configured client secret or certificate is used instead, like the azurerm
 // provider's fall-through. Without one, OIDC is still selected so the token
