@@ -23,6 +23,14 @@ func TestMethodSelection(t *testing.T) {
 		{Config{}, ""},
 		// explicit flags win over material present
 		{Config{UseCLI: true, ClientSecret: "s"}, "cli"},
+		// use_oidc without a token source falls back to secret / certificate
+		{Config{UseOIDC: true, ClientSecret: "s"}, "secret"},
+		{Config{UseOIDC: true, ClientCertificatePath: "/x.pem"}, "certificate"},
+		{Config{UseOIDC: true, OIDCRequestURL: "https://x", ClientSecret: "s"}, "secret"},
+		// ...but a usable token source keeps OIDC first
+		{Config{UseOIDC: true, OIDCToken: "jwt", ClientSecret: "s"}, "oidc"},
+		{Config{UseOIDC: true, OIDCTokenFilePath: "/t", ClientSecret: "s"}, "oidc"},
+		{Config{UseOIDC: true, OIDCRequestURL: "https://x", OIDCRequestToken: "t", ClientSecret: "s"}, "oidc"},
 	}
 	for _, c := range cases {
 		if got := c.c.Method(); got != c.want {
