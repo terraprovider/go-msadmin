@@ -3,8 +3,8 @@ module github.com/terraprovider/go-msadmin
 go 1.26
 
 require (
-	github.com/AzureAD/microsoft-authentication-library-for-go v1.9.0
-	github.com/andybalholm/brotli v1.2.4
+	github.com/AzureAD/microsoft-authentication-library-for-go v1.10.1
+	github.com/andybalholm/brotli v1.2.6
 	software.sslmate.com/src/go-pkcs12 v0.7.3
 )
 
